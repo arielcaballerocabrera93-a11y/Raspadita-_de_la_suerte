@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#6554e8">
+<title>Raspadita de la Suerte</title>
+<style>
+:root{--purple:#6554e8;--deep:#302b68;--pale:#f1efff;--ink:#24264f;--muted:#747895;--green:#16865d;--bg:#f4f6fc;--line:#e5e7f1}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+header{background:linear-gradient(135deg,#6654ed,#493cb2);color:white;padding:22px 18px 18px;border-radius:0 0 24px 24px}
+header .top{display:flex;align-items:center;justify-content:space-between;gap:10px}h1{font-size:25px;line-height:1.15;margin:0;font-weight:850}header p{margin:12px 0 0;color:#eeecff;font-size:15px;line-height:1.45}
+.pill{font-size:11px;font-weight:800;letter-spacing:.4px;border:1px solid #ffffff66;border-radius:20px;padding:8px 10px;white-space:nowrap}
+main{max-width:720px;margin:auto;padding:16px 14px 40px}.tabs{display:flex;gap:8px;margin:0 0 14px}.tab{flex:1;border:1px solid var(--line);border-radius:14px;background:white;padding:12px 8px;font-weight:800;color:var(--deep)}.tab.active{background:var(--purple);color:white;border-color:var(--purple)}
+.card{background:white;border:1px solid #e8e9f2;border-radius:22px;padding:18px;margin:0 0 14px;box-shadow:0 5px 16px #28245b08}.card h2{font-size:20px;margin:0 0 8px}.sub{color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 16px}
+label{display:block;font-weight:750;font-size:14px;margin:12px 0 7px}input,select{width:100%;padding:13px 12px;border:1px solid #dfe1ee;border-radius:13px;font:inherit;color:var(--ink);background:#fff}
+button{font:inherit;font-weight:800;border:0;border-radius:14px;padding:13px 14px;cursor:pointer}.primary{background:var(--purple);color:white}.secondary{background:var(--pale);color:var(--deep)}.success{background:#e5f8ef;color:#16734f}.danger{background:#fff0f0;color:#a33131}.full{width:100%}.row{display:flex;gap:9px}.row>*{flex:1;min-width:0}.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0}.quick button{background:#f8f8fc;border:1px solid #e5e6f0;color:var(--deep);padding:12px 4px}.quick button.selected{background:var(--deep);color:white}
+.stat{display:inline-block;background:#e5f8ef;color:#16734f;border-radius:20px;padding:7px 10px;font-size:13px;font-weight:800}.lot{border:2px solid #7969e9;background:#f7f5ff;border-radius:18px;padding:15px;margin:12px 0}.lot strong{display:block;font-size:18px}.muted{color:var(--muted)}.item{border:1px solid var(--line);border-radius:16px;padding:13px;margin:9px 0}.itemhead{display:flex;justify-content:space-between;gap:10px;align-items:center}.itemhead strong{font-size:15px}.small{font-size:12px;color:var(--muted)}.hidden{display:none!important}
+.symbols{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.symbol{background:#f8f7ff;border:2px solid #e1ddff;border-radius:16px;text-align:center;padding:16px 4px;font-size:32px;min-height:92px}.symbol span{display:block;font-size:11px;font-weight:800;color:var(--muted);margin-top:5px}.scratchgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.scratch{background:linear-gradient(145deg,#7766f1,#4c3eb6);color:white;border-radius:16px;min-height:88px;font-size:31px;border:2px solid #c7c0ff}.scratch.revealed{background:#f5f3ff;color:var(--ink);border-color:#e1ddff}.notice{border-radius:14px;padding:13px;background:#f4f2ff;color:var(--deep);font-size:14px;line-height:1.45;margin:12px 0}.win{background:#e5f8ef;color:#146c4a}.lose{background:#fff4e8;color:#8a4b10}.footer{text-align:center;font-size:12px;color:var(--muted);padding:10px}
+@media(min-width:600px){main{padding-top:22px}.symbols .symbol{font-size:38px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top"><h1>🍀 Raspadita de la Suerte</h1><span class="pill" id="rolePill">DEMO</span></div>
+  <p id="greeting">Tu espacio simple para vender y jugar. Demostración sin dinero real.</p>
+</header>
+<main>
+  <div id="mainTabs" class="tabs">
+    <button class="tab active" data-tab="seller">🛍️ Vendedor</button>
+    <button class="tab" data-tab="admin">⚙️ Administrador</button>
+  </div>
+
+  <section id="sellerView">
+    <div class="card">
+      <h2>🛍️ Nueva venta</h2>
+      <p class="sub">Elegí el lote y la cantidad. Después compartí el enlace de demostración con el cliente.</p>
+      <label for="lotSelect">1. Elegí el lote</label>
+      <select id="lotSelect"></select>
+      <div class="lot" id="lotSummary"></div>
+      <label>2. ¿Cuántos cartones?</label>
+      <div class="quick">
+        <button type="button" data-qty="1" class="selected">1<br><small>cartón</small></button>
+        <button type="button" data-qty="3">3<br><small>cartones</small></button>
+        <button type="button" data-qty="5">5<br><small>cartones</small></button>
+        <button type="button" data-qty="10">10<br><small>cartones</small></button>
+      </div>
+      <div class="row"><button id="minus" class="secondary">−</button><input id="qty" type="number" min="1" max="45" value="1" aria-label="Cantidad de cartones"><button id="plus" class="secondary">+</button></div>
+      <div class="notice" id="saleTotal">Total: Gs. 5.000</div>
+      <button id="createSale" class="primary full">Generar enlace de venta</button>
+    </div>
+    <div class="card">
+      <h2>🔗 Últimos enlaces de venta</h2>
+      <p class="sub">Los enlaces recientes se guardan en este teléfono o navegador de demostración.</p>
+      <div id="salesList"></div>
+    </div>
+    <div class="card">
+      <h2>🏆 Cobrar un premio</h2>
+      <p class="sub">Ingresá el código que muestra el cliente al terminar la raspadita.</p>
+      <label for="prizeCode">Código del cartón</label>
+      <input id="prizeCode" placeholder="Ej.: RSL-AB12CD">
+      <button id="validateCode" class="secondary full" style="margin-top:10px">Validar código</button>
+      <div id="codeResult"></div>
+    </div>
+    <div class="card">
+      <h2>💰 ¿Cuánto tengo que entregar?</h2>
+      <div id="sellerSummary" class="notice">Todavía no hay ventas registradas.</div>
+      <h2 style="margin-top:18px">🧾 Ventas pendientes de rendición</h2>
+      <div id="pendingSales"></div>
+      <h2 style="margin-top:18px">🎁 Premios pendientes y recientes</h2>
+      <div id="prizesList"></div>
+    </div>
+    <div class="card">
+      <h2>ℹ️ Ayuda rápida</h2>
+      <p class="sub">1. Elegí lote y cantidad. 2. Compartí el enlace. 3. El cliente raspa las 9 casillas y muestra el código si gana.</p>
+      <p class="small">Esta es una demo local. Los datos no se sincronizan entre teléfonos y no debe usarse para apuestas ni pagos reales.</p>
+    </div>
+  </section>
+
+  <section id="adminView" class="hidden">
+    <div class="card">
+      <h2>👥 Crear vendedor</h2>
+      <p class="sub">Registrá al vendedor y generá un enlace para compartirle por WhatsApp su panel de demostración.</p>
+      <label for="sellerName">Nombre del vendedor</label><input id="sellerName" placeholder="Ej.: Miguel Benítez" autocomplete="name">
+      <label for="sellerPhone">WhatsApp del vendedor (opcional)</label><input id="sellerPhone" inputmode="tel" placeholder="Ej.: 595981123456">
+      <button id="createSeller" class="primary full" style="margin-top:12px">Crear vendedor y generar enlace</button>
+      <div id="sellerCreateResult"></div>
+    </div>
+    <div class="card">
+      <h2>🧑‍💼 Vendedores registrados</h2>
+      <p class="sub">Podés habilitar o deshabilitar cada vendedor. En esta demo, los registros se guardan solamente en este navegador.</p>
+      <div id="sellersList"></div>
+    </div>
+    <div class="card">
+      <h2>⚙️ Configuración del lote</h2>
+      <p class="sub">Configurá el lote y el porcentaje de la recaudación que se reservará para premios.</p>
+      <label for="adminLot">Nombre del lote</label><input id="adminLot" value="Lote de prueba">
+      <label for="adminPrice">Precio por cartón (Gs.)</label><input id="adminPrice" type="number" min="0" step="500" value="5000">
+      <label for="adminAvailable">Cartones disponibles</label><input id="adminAvailable" type="number" min="1" value="5000">
+      <label for="adminPrizePercent" style="margin-top:12px">Porcentaje de la recaudación destinado a premios</label>
+      <input id="adminPrizePercent" type="number" min="0" max="100" step="1" value="40">
+      <div class="notice" id="prizeBudgetPreview" style="margin-top:10px"></div>
+      <h2 style="margin-top:18px">🎁 Premios por figura</h2>
+      <p class="sub">El premio se paga solo si salen exactamente 3 figuras iguales en las 9 casillas. Si coinciden 4 o más, no gana.</p>
+      <div id="prizeSettings"></div>
+      <button id="saveAdmin" class="primary full" style="margin-top:12px">Guardar configuración</button>
+      <button id="resetDemo" class="danger full" style="margin-top:9px">Restablecer datos de demostración</button>
+      <div id="adminMessage"></div>
+    </div>
+    <div class="card"><h2>📊 Resumen general</h2><div id="adminSummary" class="notice"></div></div>
+  </section>
+
+  <section id="playView" class="hidden">
+    <div class="card">
+      <h2>🎟️ Tu raspadita</h2>
+      <p class="sub" id="playInfo">Raspá las 9 casillas tocándolas una por una.</p>
+      <div class="scratchgrid" id="scratchGrid"></div>
+      <div id="playResult"></div>
+      <button id="newScratch" class="primary full hidden" style="margin-top:12px">Volver a la página principal</button>
+    </div>
+  </section>
+  <div class="footer">Raspadita de la Suerte · Versión de demostración</div>
+</main>
+<script>
+const ICONS=[
+ {name:"Corona",emoji:"👑",prize:25000},
+ {name:"Trébol",emoji:"🍀",prize:15000},
+ {name:"Diamante",emoji:"💎",prize:10000},
+ {name:"Estrella",emoji:"⭐",prize:8000},
+ {name:"Campana",emoji:"🔔",prize:5000},
+ {name:"Siete",emoji:"7️⃣",prize:4000},
+ {name:"Sol",emoji:"☀️",prize:3000},
+ {name:"Cereza",emoji:"🍒",prize:2000},
+ {name:"Herradura",emoji:"🧲",prize:1000}
+];
+const DEFAULT={lot:"Lote de prueba",price:5000,available:5000,prizePercent:40,prizes:ICONS.map(x=>({...x}))};
+const $=id=>document.getElementById(id);
+const money=n=>"Gs. "+Number(n||0).toLocaleString("es-PY");
+const read=(k,f)=>{try{return JSON.parse(localStorage.getItem(k))??f}catch(e){return f}};
+let config=read("rsl_config",DEFAULT),sales=read("rsl_sales",[]),sellers=read("rsl_sellers",[]),qty=1;
+if(typeof config.prizePercent!=="number") config.prizePercent=40;
+function saveSellers(){localStorage.setItem("rsl_sellers",JSON.stringify(sellers))}
+function sellerLink(id){const base=location.href.split("?")[0].split("#")[0];return base+"?seller="+encodeURIComponent(id)}
+function save(){localStorage.setItem("rsl_config",JSON.stringify(config));localStorage.setItem("rsl_sales",JSON.stringify(sales))}
+function safe(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function drawConfig(){
+ $("lotSelect").innerHTML=`<option value="main">${safe(config.lot)}</option>`;
+ $("lotSummary").innerHTML=`<div class="itemhead"><strong>${safe(config.lot)}</strong><span class="stat">${config.available} disponibles</span></div><div style="margin-top:7px;color:var(--muted);font-weight:700">${money(config.price)} por cartón</div>`;
+ $("saleTotal").textContent=`Total por ${qty} cartón(es): ${money(config.price*qty)}`;
+ $("adminLot").value=config.lot;$("adminPrice").value=config.price;$("adminAvailable").value=config.available;$("adminPrizePercent").value=config.prizePercent;
+ const gross=Math.max(0,Number(config.price)||0)*Math.max(0,Number(config.available)||0),budget=gross*Math.min(100,Math.max(0,Number(config.prizePercent)||0))/100,avg=Number(config.available)>0?budget/Number(config.available):0;
+ $("prizeBudgetPreview").innerHTML=`<strong>Recaudación prevista:</strong> ${money(gross)}<br><strong>Presupuesto para premios (${config.prizePercent}%):</strong> ${money(budget)}<br><strong>Promedio de premios por cartón:</strong> ${money(avg)}<br><span class="small">Estimación de planificación; los premios reales dependen de las combinaciones ganadoras.</span>`;
+ $("prizeSettings").innerHTML=config.prizes.map((p,i)=>`<div class="item"><div class="itemhead"><strong>${p.emoji} ${p.name}</strong><span class="small">Figura ${i+1}</span></div><label>Premio (Gs.)</label><input type="number" min="0" step="500" data-prize="${i}" value="${p.prize}"></div>`).join("");
+ renderSales();renderSummary();
+}
+function renderSellers(){
+ const box=$("sellersList"); if(!box)return;
+ box.innerHTML=sellers.length?sellers.slice().reverse().map(v=>`<div class="item"><div class="itemhead"><strong>${safe(v.name)}</strong><span class="stat" style="${v.enabled?'':'background:#fff0f0;color:#a33131'}">${v.enabled?'HABILITADO':'DESHABILITADO'}</span></div><div class="small">ID: ${safe(v.id)}${v.phone?' · WhatsApp: '+safe(v.phone):''}</div><div class="row" style="margin-top:10px"><button class="secondary" onclick="copySellerLink('${v.id}')">Copiar enlace</button><button class="${v.enabled?'danger':'success'}" onclick="toggleSeller('${v.id}')">${v.enabled?'Deshabilitar':'Habilitar'}</button><button class="success" onclick="shareSellerLink('${v.id}')">WhatsApp</button></div></div>`).join(""):'<p class="sub">Todavía no hay vendedores creados.</p>';
+}
+window.toggleSeller=id=>{const v=sellers.find(x=>x.id===id);if(!v)return;v.enabled=!v.enabled;saveSellers();renderSellers();const params=new URLSearchParams(location.search);if(params.get("seller")===id&&!v.enabled){$("sellerView").innerHTML='<div class="card"><h2>⛔ Panel deshabilitado</h2><p class="sub">Este vendedor fue deshabilitado en el navegador del administrador. Para bloquear accesos entre celulares se necesita una base de datos compartida.</p></div>';}};
+window.copySellerLink=id=>{const url=sellerLink(id);if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(()=>alert("Enlace copiado")).catch(()=>prompt("Copiá el enlace del vendedor:",url));else prompt("Copiá el enlace del vendedor:",url)};
+window.shareSellerLink=id=>{const v=sellers.find(x=>x.id===id);if(!v)return;const url=sellerLink(id);const msg=`Hola ${v.name}, este es tu enlace para abrir el panel de vendedor de Raspadita de la Suerte: ${url}`;let phone=(v.phone||"").replace(/\\D/g,"");location.href="https://wa.me/"+phone+"?text="+encodeURIComponent(msg)};
+$("createSeller").onclick=()=>{const name=$("sellerName").value.trim();if(!name){alert("Escribí el nombre del vendedor.");$("sellerName").focus();return}const v={id:"VEN-"+Math.random().toString(36).slice(2,8).toUpperCase(),name,phone:$("sellerPhone").value.trim(),enabled:true,created:new Date().toLocaleDateString("es-PY")};sellers.push(v);saveSellers();renderSellers();$("sellerCreateResult").innerHTML=`<div class="notice win">Vendedor creado: <b>${safe(v.name)}</b><br>Enlace de demostración:<br><small>${safe(sellerLink(v.id))}</small><div class="row" style="margin-top:10px"><button class="secondary" onclick="copySellerLink('${v.id}')">Copiar enlace</button><button class="success" onclick="shareSellerLink('${v.id}')">Enviar por WhatsApp</button></div></div>`;$("sellerName").value="";$("sellerPhone").value=""};
+function renderSales(){
+ $("salesList").innerHTML=sales.length?sales.slice().reverse().slice(0,8).map(s=>`<div class="item"><div class="itemhead"><strong>Venta #${safe(s.id)}</strong><span class="small">${safe(s.date)}</span></div><div class="small">${s.qty} cartón(es) · ${money(s.total)}</div><div class="row" style="margin-top:10px"><button class="success" onclick="openSale('${s.id}')">Abrir enlace</button><button class="secondary" onclick="copySale('${s.id}')">Copiar</button><button class="secondary" onclick="shareSale('${s.id}')">WhatsApp</button></div><div class="small" style="margin-top:6px">Enlace: ${safe(s.url||"Enlace de esta demo")}</div></div>`).join(""):'<p class="sub">Todavía no hay enlaces de venta.</p>';
+ $("pendingSales").innerHTML=sales.filter(s=>!s.settled).map(s=>`<div class="item"><div class="itemhead"><strong>Venta #${safe(s.id)}</strong><span>${money(s.total)}</span></div><button class="secondary" style="margin-top:8px" onclick="settleSale('${s.id}')">Marcar rendida</button></div>`).join("")||'<p class="sub">No hay ventas pendientes.</p>';
+ const wins=sales.flatMap(s=>(s.cards||[]).filter(c=>c.win&&!c.paid).map(c=>({sale:s.id,card:c})));
+ $("prizesList").innerHTML=wins.map(w=>`<div class="item"><strong>🎁 ${safe(w.card.code)}</strong><div class="small">Venta #${safe(w.sale)} · Premio ${money(w.card.prize)}</div></div>`).join("")||'<p class="sub">No hay premios pendientes en este navegador.</p>';
+}
+function renderSummary(){
+ const total=sales.reduce((a,s)=>a+s.total,0),pending=sales.filter(s=>!s.settled).reduce((a,s)=>a+s.total,0),paid=sales.reduce((a,s)=>a+(s.cards||[]).filter(c=>c.paid).reduce((b,c)=>b+c.prize,0),0);
+ $("sellerSummary").innerHTML=`Ventas registradas: <b>${sales.length}</b><br>Importe vendido: <b>${money(total)}</b><br>Pendiente de rendición: <b>${money(pending)}</b><br>Premios marcados como pagados: <b>${money(paid)}</b>`;
+ $("adminSummary").innerHTML=`Lote: <b>${safe(config.lot)}</b><br>Ventas: <b>${sales.length}</b><br>Cartones vendidos: <b>${sales.reduce((a,s)=>a+s.qty,0)}</b><br>Total vendido: <b>${money(total)}</b>`;
+}
+document.querySelectorAll("[data-qty]").forEach(b=>b.addEventListener("click",()=>{qty=Number(b.dataset.qty);$("qty").value=qty;document.querySelectorAll("[data-qty]").forEach(x=>x.classList.toggle("selected",x===b));drawConfig()}));
+$("qty").addEventListener("change",()=>{qty=Math.max(1,Math.min(45,Number($("qty").value)||1));$("qty").value=qty;document.querySelectorAll("[data-qty]").forEach(x=>x.classList.toggle("selected",Number(x.dataset.qty)===qty));drawConfig()});
+$("minus").onclick=()=>{qty=Math.max(1,qty-1);$("qty").value=qty;drawConfig()};
+$("plus").onclick=()=>{qty=Math.min(45,qty+1);$("qty").value=qty;drawConfig()};
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));$("sellerView").classList.toggle("hidden",b.dataset.tab!=="seller");$("adminView").classList.toggle("hidden",b.dataset.tab!=="admin");$("playView").classList.add("hidden");$("mainTabs").classList.remove("hidden");$("greeting").textContent=b.dataset.tab==="admin"?"Configurá los lotes y premios de la demostración.":"Tu espacio simple para vender y cobrar premios.";$("rolePill").textContent=b.dataset.tab==="admin"?"ADMINISTRADOR":"VENDEDOR"});
+function makeId(){return Math.random().toString(36).slice(2,8).toUpperCase()}
+$("createSale").onclick=()=>{
+ const n=Math.max(1,Math.min(45,Number($("qty").value)||qty));
+ const cards=Array.from({length:n},()=>({code:"RSL-"+makeId(),played:false,win:false,prize:0,paid:false}));
+ const s={id:String(Date.now()).slice(-5),date:new Date().toLocaleString("es-PY",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}),qty:n,total:n*config.price,settled:false,cards};
+ const base=location.href.split("?")[0].split("#")[0];
+ s.url=base+"?sale="+encodeURIComponent(s.id);
+ sales.push(s);save();renderSales();renderSummary();
+ alert("Venta creada. Compartí el enlace de demostración. Recordá: los datos solo se guardan en este navegador.");
+};
+window.openSale=id=>{const s=sales.find(x=>x.id===id);if(!s)return;const base=location.href.split("?")[0].split("#")[0];window.open(base+"?sale="+encodeURIComponent(id)," _blank")};
+window.copySale=id=>{const s=sales.find(x=>x.id===id);if(!s)return;const url=s.url||location.href.split("?")[0]+"?sale="+id;navigator.clipboard?.writeText(url).then(()=>alert("Enlace copiado")).catch(()=>prompt("Copiá este enlace:",url))};
+window.shareSale=id=>{const s=sales.find(x=>x.id===id);if(!s)return;const url=s.url||location.href.split("?")[0]+"?sale="+id;const msg=`¡Tu Raspadita de la Suerte está lista! Abrí este enlace: ${url}`;location.href="https://wa.me/?text="+encodeURIComponent(msg)};
+window.settleSale=id=>{const s=sales.find(x=>x.id===id);if(s){s.settled=true;save();renderSales();renderSummary()}};
+$("validateCode").onclick=()=>{const code=$("prizeCode").value.trim().toUpperCase();let found=null;for(const s of sales){for(const c of s.cards||[])if(c.code===code)found={s,c}}if(!found){$("codeResult").innerHTML='<div class="notice lose">Código no encontrado en este navegador. En esta demo, los datos no se comparten entre teléfonos.</div>';return}if(!found.c.played){$("codeResult").innerHTML='<div class="notice">El cartón todavía no fue jugado.</div>';return}if(!found.c.win){$("codeResult").innerHTML='<div class="notice lose">Este cartón no tiene premio.</div>';return}if(found.c.paid){$("codeResult").innerHTML='<div class="notice">Este premio ya fue marcado como pagado.</div>';return}$("codeResult").innerHTML=`<div class="notice win">Premio validado: <b>${money(found.c.prize)}</b><br><button class="success" onclick="payPrize('${code}')">Marcar premio pagado</button></div>`};
+window.payPrize=code=>{for(const s of sales)for(const c of s.cards||[])if(c.code===code){c.paid=true;save();renderSales();renderSummary();$("codeResult").innerHTML='<div class="notice win">Premio marcado como pagado en esta demo.</div>';return}};
+$("saveAdmin").onclick=()=>{config.lot=$("adminLot").value.trim()||"Lote de prueba";config.price=Math.max(0,Number($("adminPrice").value)||0);config.available=Math.max(1,Number($("adminAvailable").value)||1);config.prizePercent=Math.min(100,Math.max(0,Number($("adminPrizePercent").value)||0));document.querySelectorAll("[data-prize]").forEach(el=>config.prizes[Number(el.dataset.prize)].prize=Math.max(0,Number(el.value)||0));save();drawConfig();$("adminMessage").innerHTML='<div class="notice win">Configuración del lote y presupuesto de premios guardados en este navegador.</div>'};
+$("resetDemo").onclick=()=>{if(confirm("¿Restablecer configuración y borrar las ventas de esta demo?")){config=JSON.parse(JSON.stringify(DEFAULT));sales=[];sellers=[];save();saveSellers();drawConfig();$("adminMessage").innerHTML='<div class="notice">Datos de demostración restablecidos.</div>'}};
+function playSale(id){
+ const s=sales.find(x=>x.id===id);if(!s){alert("Esta venta no se encuentra guardada en este navegador. Enlaces entre teléfonos requieren un servidor compartido.");return}
+ $("mainTabs").classList.add("hidden");$("sellerView").classList.add("hidden");$("adminView").classList.add("hidden");$("playView").classList.remove("hidden");$("rolePill").textContent="JUGADOR";$("greeting").textContent="¡Mucha suerte! Tocá cada casilla para rasparla.";
+ let card=s.cards.find(c=>!c.played);if(!card)card=s.cards[0];if(!card){$("playInfo").textContent="No hay cartones en esta venta.";return}
+ $("playInfo").textContent="Código del cartón: "+card.code+" · Raspá las 9 casillas.";
+ const selected=Array.from({length:9},()=>config.prizes[Math.floor(Math.random()*config.prizes.length)]);
+ // Demo win condition: exactly three occurrences of one symbol and no symbol occurring four or more times.
+ let counts=selected.reduce((a,p)=>(a[p.name]=(a[p.name]||0)+1,a),{});let winning=selected.find(p=>counts[p.name]===3);
+ if(winning){card.win=true;card.prize=winning.prize}else{card.win=false;card.prize=0}
+ card.played=true;card.symbols=selected.map(p=>p.name);save();
+ $("scratchGrid").innerHTML=selected.map((p,i)=>`<button class="scratch" data-cell="${i}" aria-label="Raspar casilla ${i+1}">❓</button>`).join("");
+ let revealed=0;document.querySelectorAll("[data-cell]").forEach((b,i)=>b.onclick=()=>{if(b.classList.contains("revealed"))return;b.classList.add("revealed");b.innerHTML=selected[i].emoji;revealed++;if(revealed===9){const counts2=selected.reduce((a,p)=>(a[p.name]=(a[p.name]||0)+1,a),{});const exact=selected.find(p=>counts2[p.name]===3);if(exact){card.win=true;card.prize=exact.prize;$("playResult").innerHTML=`<div class="notice win">🎉 ¡FELICIDADES! Salieron exactamente 3 ${exact.emoji} ${safe(exact.name)}. Premio de demostración: <b>${money(exact.prize)}</b><br>Tu código: <b>${card.code}</b></div>`}else{card.win=false;card.prize=0;$("playResult").innerHTML=`<div class="notice lose">¡Gracias por jugar! Esta raspadita no tiene premio.<br>Tu código: <b>${card.code}</b></div>`}save();$("newScratch").classList.remove("hidden");renderSales();renderSummary()}});
+}
+$("newScratch").onclick=()=>{location.href=location.href.split("?")[0]};
+drawConfig();
+const params=new URLSearchParams(location.search);
+if(params.has("seller")){
+ const v=sellers.find(x=>x.id===params.get("seller"));
+ if(!v){$("greeting").textContent="Enlace de vendedor de demostración.";alert("Este enlace solo funciona en el navegador donde se creó el vendedor. Para compartirlo de verdad entre celulares, necesitamos una base de datos común.");}
+ else if(!v.enabled){$("sellerView").innerHTML='<div class="card"><h2>⛔ Panel deshabilitado</h2><p class="sub">Este vendedor está deshabilitado en los datos locales de esta demo.</p></div>';}
+ else{$("greeting").textContent="Hola, "+v.name+" 👋";$("rolePill").textContent="VENDEDOR";document.querySelectorAll(".tab").forEach(b=>{if(b.dataset.tab==="admin")b.classList.add("hidden")});}
+}
+if(params.has("sale"))playSale(params.get("sale"));
+</script>
+</body>
+</html>
