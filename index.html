@@ -1,1 +1,44 @@
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>Raspadita de la Suerte</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#111827;color:white;text-align:center}
+header{padding:24px 12px;background:#172554;border-bottom:3px solid #facc15}
+h1{color:#facc15;margin:8px 0;font-size:28px}
+main{max-width:480px;margin:auto;padding:20px}
+.card{background:#1f2937;border:2px solid #facc15;border-radius:18px;padding:20px;margin:18px 0}
+button{background:#facc15;color:#111827;border:0;border-radius:10px;padding:14px 20px;font-size:17px;font-weight:bold;cursor:pointer}
+#prize{font-size:28px;font-weight:bold;color:#facc15;padding:22px}
+small{color:#cbd5e1}
+</style>
+</head>
+<body>
+<header><div>🍀 🎟️ 🍀</div><h1>Raspadita de la Suerte</h1><p>¡Tu suerte puede cambiar hoy!</p></header>
+<main>
+<div class="card">
+<h2>🎁 Tu raspadita de prueba</h2>
+<p>Presioná el botón para descubrir tu premio de demostración.</p>
+<div id="prize">❓ ❓ ❓</div>
+<button id="play">Descubrir premio</button>
+<p id="message"></p>
+</div>
+<p>🎉 ¡Mucha suerte! 🎉</p>
+<small>Prototipo de demostración. Premios ficticios; no realiza apuestas ni pagos reales.</small>
+</main>
+<script>
+const premios=["¡Ganaste 10 puntos!","¡Ganaste 20 puntos!","Seguí intentando 🍀"];
+document.getElementById("play").addEventListener("click",function(){
+const premio=premios[Math.floor(Math.random()*premios.length)];
+document.getElementById("prize").textContent="🎉";
+document.getElementById("message").textContent=premio;
+this.disabled=true;
+this.textContent="Raspadita utilizada";
+});
+</script>
+</body>
+</html>
